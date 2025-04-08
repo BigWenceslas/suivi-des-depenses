@@ -1,0 +1,78 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        },
+        "connection": {
+          "connectionReferenceLogicalName": "pu_sharedcommondataserviceforapps_42b1d"
+        },
+        "runtimeSource": "embedded"
+      },
+      "shared_gmail": {
+        "api": {
+          "name": "shared_gmail"
+        },
+        "connection": {
+          "connectionReferenceLogicalName": "pu_sharedgmail_1bd05"
+        },
+        "runtimeSource": "embedded"
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        }
+      },
+      "triggers": {
+        "When_a_row_is_added,_modified_or_deleted": {
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "parameters": {
+              "subscriptionRequest/message": 1,
+              "subscriptionRequest/entityname": "cr382_depense",
+              "subscriptionRequest/scope": 4
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "SubscribeWebhookTrigger",
+              "connectionName": "shared_commondataserviceforapps"
+            }
+          },
+          "metadata": {
+            "operationMetadataId": "2e3c0e0a-5997-4fca-9fbd-e87aa42d9ec4"
+          }
+        }
+      },
+      "actions": {
+        "Send_email_(V2)": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "emailMessage/To": "bessala93@gmail.com",
+              "emailMessage/Subject": "Demande d'approbation de remboursememt",
+              "emailMessage/Body": "<p class=\"editor-paragraph\">Des depenses au compte de la societe dans le cadre de  @{triggerOutputs()?['body/cr382_name']} ont ete effectues. Veuillez vous rendre sur la plateforme de validation des depenses afin de les evaluer pour un remboursement.</p>"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_gmail",
+              "operationId": "SendEmailV2",
+              "connectionName": "shared_gmail"
+            }
+          },
+          "runAfter": {}
+        }
+      }
+    },
+    "templateName": null
+  },
+  "schemaVersion": "1.0.0.0"
+}
